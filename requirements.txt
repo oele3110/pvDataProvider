@@ -1,0 +1,2 @@
+git+https://github.com/oele3110/modbusReader@main
+pyModbusTCP~=0.3.0
