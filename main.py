@@ -1,89 +1,66 @@
 import asyncio
-import json
-import signal
-import sys
 
-import websockets
-from modbusReader.ModbusReader import ModbusReader
+from heaterRod.heaterRod import HeaterRod
+from modbus.modbus import Modbus
+from mqtt.MqttClient import MqttClient
 
-from ModbusConfig import modbus_wallbox_config
+# heater rod configuration
+heater_rod_ipaddress = "192.168.178.174"
+heater_rod_data_store = {}
+values = ['power_elwa2', 'temp1', 'temp2']
 
-myModbusReader = None
-connected_clients = set()
-shutdown_event = asyncio.Event()  # event for shutdown
+# mqtt configuration
+MQTT_BROKER = "192.168.178.182"
+MQTT_PORT = 1883
+MQTT_TOPICS = [
+    "mqtt/0/knx/Warmwasser_Temperatur"
+]
+mqtt_data_store = {}
+
+# modbus configuration
+modbus_data_store = {}
 
 
-async def send_data():
-    # stop sending data if shutdown event is set
-    while not shutdown_event.is_set():
-        # only send data if there are connected clients
-        if connected_clients:
-            connection_status = myModbusReader.read_modbus(modbus_wallbox_config["home_consumption"])
-            data = "Current consumption: " + str(connection_status) + "W"
-            print(f"Data sent:")
-            print(f">>> {data}")
-            await asyncio.gather(*(client.send(data) for client in connected_clients))
+async def print_data_store(label, data_store):
+    while True:
+        print(f"{label}: {data_store}")
         await asyncio.sleep(1)
 
 
-async def handle_client(websocket):
-    connected_clients.add(websocket)
-    print(f"✅ Client connected: {websocket.remote_address}")
+async def main():
+    heater_rod = HeaterRod(heater_rod_ipaddress, values, heater_rod_data_store)
+    modbus = Modbus(modbus_data_store)
+    mqtt = MqttClient(MQTT_BROKER, MQTT_PORT, MQTT_TOPICS, mqtt_data_store)
+
+    print("Start HeaterRod")
+    heater_rod_task = asyncio.create_task(heater_rod.start())
+    print("Start Modbus")
+    modbus_task = asyncio.create_task(modbus.start())
+    print("Start MQTT")
+    mqtt_task = asyncio.create_task(mqtt.start())
+
+    print_task_modbus = asyncio.create_task(print_data_store("Modbus", modbus_data_store))
+    print_task_heater_rod = asyncio.create_task(print_data_store("Heater Rod", heater_rod_data_store))
+    print_task_mqtt = asyncio.create_task(print_data_store("MQTT", mqtt_data_store))
+
+    tasks = [heater_rod_task, modbus_task, mqtt_task, print_task_modbus, print_task_heater_rod, print_task_mqtt]
+
     try:
-        await websocket.wait_closed()
-    finally:
-        if websocket in connected_clients:
-            connected_clients.remove(websocket)
-            print(f"❌ Client disconnected: {websocket.remote_address}")
-
-
-async def shutdown():
-    print(f"🔴 shutting down server ...")
-
-    if connected_clients:
-        print(f"📢 all clients informed about shutdown")
-        tasks = [client.close(code=1001, reason="Server shutdown") for client in connected_clients]
-        # await asyncio.gather(*(client.close(code=1001, reason="Server shutdown") for client in connected_clients))
         await asyncio.gather(*tasks)
-        await asyncio.sleep(1)  # wait a bit to ensure that all close frames are sent
-
-    shutdown_event.set()
-
-
-async def start_websocket():
-    # start websocket server and stop it if shutdown event is set
-    stop = asyncio.Future()  # future to stop server
-
-    async with websockets.serve(handle_client, "0.0.0.0", 8765):
-        print("🚀 websocket server running of port 8765...")
-        try:
-            await asyncio.gather(send_data(), stop)  # run server until stop signal
-        except asyncio.CancelledError:
-            pass
-        finally:
-            await shutdown()
-
-
-def read_smartmeter_config():
-    with open('smartMeterConfig.json', 'r') as file:
-        data = json.load(file)
-    return data.get('host')
+    except asyncio.CancelledError:
+        pass
+    finally:
+        print("Stopping tasks")
+        await heater_rod.stop()
+        await modbus.stop()
+        await mqtt.stop()
+        for task in tasks:
+            task.cancel()
+        print("All tasks stopped")
 
 
 if __name__ == '__main__':
-    host = read_smartmeter_config()
-    print("PV Data Provider")
-    myModbusReader = ModbusReader(host)
-
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-
-    # signal handler for shutdown (only linux)
-    if sys.platform != "win32":
-        loop.add_signal_handler(signal.SIGINT, lambda: asyncio.create_task(shutdown()))
     try:
-        loop.run_until_complete(start_websocket())  # start event loop
+        asyncio.run(main())
     except KeyboardInterrupt:
-        print("\n🛑 server stopped")
-        loop.run_until_complete(shutdown())
-        sys.exit(0)
+        print("Program stopped")

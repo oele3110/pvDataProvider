@@ -2,3 +2,5 @@ git+https://github.com/oele3110/modbusReader@main
 pyModbusTCP~=0.3.0
 websockets~=15.0.1
 paho-mqtt~=2.1.0
+requests~=2.32.3
+aiohttp~=3.11.13

@@ -1,6 +1,6 @@
 from modbusReader.ModbusDataType import ModbusDataType
 
-modbus_wallbox_config = {
+modbus_config = {
     "home_consumption":
         {
             "address": 40982,
