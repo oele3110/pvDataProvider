@@ -2,34 +2,36 @@ import asyncio
 
 import aiohttp
 
+from utils.Utils import process_sensor_value
 
-class HeaterRod:
-    def __init__(self, server, values, data_store):
-        print("Init HeaterRod ...")
+
+class HeaterRodClient:
+    def __init__(self, server, config, data_store):
+        print("Initializing HeaterRodClient ...")
         self.server = server
         self._stop_event = asyncio.Event()
-        self.values = values
+        self.config = config
         self.data_store = data_store
 
     async def start(self):
-        print("Starting HeaterRod ...")
+        print("Starting HeaterRodClient ...")
         async with aiohttp.ClientSession() as session:
             while not self._stop_event.is_set():
-                data = await self.get_value(session, self.values)
+                data = await self.get_value(session, self.config)
                 if data:
                     self.data_store.update(data)
                 await asyncio.sleep(1)
 
     async def stop(self):
-        print("Stopping HeaterRod ...")
+        print("Stopping HeaterRodClient ...")
         self._stop_event.set()
 
-    async def get_value(self, session, values):
+    async def get_value(self, session, config):
         try:
             async with session.get(f"http://{self.server}/data.jsn") as response:
                 if response.status == 200:
                     received_data = await response.json()
-                    return {key: received_data.get(key, None) for key in values}
+                    return {key: process_sensor_value(received_data.get(key, None), config[key]) for key in config}
                 else:
                     print(f"HTTP error: {response.status}")
                     return None

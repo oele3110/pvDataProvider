@@ -6,7 +6,7 @@ import sys
 import websockets
 from modbusReader.ModbusReader import ModbusReader
 
-from modbus.ModbusConfig import modbus_config
+from configs.ModbusConfig import modbus_config
 
 myModbusReader = None
 connected_clients = set()

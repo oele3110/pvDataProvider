@@ -3,7 +3,7 @@ import json
 
 from modbusReader.ModbusReader import ModbusReader
 
-from modbus.ModbusConfig import modbus_config
+from configs.ModbusConfig import modbus_config
 
 
 def read_smartmeter_config():
@@ -12,8 +12,9 @@ def read_smartmeter_config():
     return data.get('host')
 
 
-class Modbus:
+class ModbusClient:
     def __init__(self, data_store):
+        print("Initializing ModbusClient ...")
         host = read_smartmeter_config()
         self.modbusReader = ModbusReader(host)
         self.dataStore = data_store
@@ -21,7 +22,7 @@ class Modbus:
         self._task = None
 
     async def start(self):
-        print("Starting Modbus ...")
+        print("Starting ModbusClient ...")
         self._task = asyncio.create_task(self._run())
 
     async def _run(self):
@@ -35,7 +36,7 @@ class Modbus:
                 print(f"Modbus error: {e}")
 
     async def stop(self):
-        print("Stopping Modbus ...")
+        print("Stopping ModbusClient ...")
         self._stop_event.set()
         if self._task:
             self._task.cancel()
