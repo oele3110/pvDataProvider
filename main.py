@@ -13,6 +13,18 @@ values = ['power_elwa2', 'temp1', 'temp2']
 MQTT_BROKER = "192.168.178.182"
 MQTT_PORT = 1883
 MQTT_TOPICS = [
+    "mqtt/0/knx/Leistung_Backofen",
+    "mqtt/0/knx/Leistung_Badheizkoerper_oben",
+    "mqtt/0/knx/Leistung_Badheizkoerper_unten",
+    "mqtt/0/knx/Leistung_Geschirrspueler",
+    "mqtt/0/knx/Leistung_KWL",
+    "mqtt/0/knx/Leistung_Kuehlschrank",
+    "mqtt/0/knx/Leistung_Kuehlschrank_HWR",
+    "mqtt/0/knx/Leistung_TV",
+    "mqtt/0/knx/Leistung_TV_Zubehoer",
+    "mqtt/0/knx/Leistung_Trockner",
+    "mqtt/0/knx/Leistung_Waschmaschine",
+    "mqtt/0/knx/Leistung_Wasserenthaertung",
     "mqtt/0/knx/Warmwasser_Temperatur"
 ]
 mqtt_data_store = {}
@@ -48,14 +60,21 @@ async def main():
     try:
         await asyncio.gather(*tasks)
     except asyncio.CancelledError:
-        pass
+        print("Tasks cancelled, shutting down ...")
+    except Exception as e:
+        print(f"Unexpected error: {e}")
     finally:
-        print("Stopping tasks")
-        await heater_rod.stop()
-        await modbus.stop()
-        await mqtt.stop()
+        print("Stopping all tasks ...")
+        await asyncio.gather(heater_rod.stop(), modbus.stop(), mqtt.stop(), return_exceptions=True)
+        # wait 200 ms to give the tasks time to stop and shutdown clean
+        await asyncio.sleep(0.2)
+        # cancel all tasks
         for task in tasks:
             task.cancel()
+            try:
+                await task
+            except asyncio.CancelledError:
+                pass
         print("All tasks stopped")
 
 

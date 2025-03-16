@@ -18,8 +18,13 @@ class Modbus:
         self.modbusReader = ModbusReader(host)
         self.dataStore = data_store
         self._stop_event = asyncio.Event()
+        self._task = None
 
     async def start(self):
+        print("Starting Modbus ...")
+        self._task = asyncio.create_task(self._run())
+
+    async def _run(self):
         while not self._stop_event.is_set():
             try:
                 for config in modbus_config:
@@ -32,3 +37,11 @@ class Modbus:
     async def stop(self):
         print("Stopping Modbus ...")
         self._stop_event.set()
+        if self._task:
+            self._task.cancel()
+            try:
+                await self._task
+            except asyncio.CancelledError:
+                pass
+        self.modbusReader.__shutdown__()
+
