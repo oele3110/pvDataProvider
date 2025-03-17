@@ -6,134 +6,208 @@ modbus_config = {
         "type": ModbusDataType.INT32,
         "resolution": 1,
         "digits_round": 0,
-        "update_frequency": 1,
-        "display_string": "Grid Power Total",
-        "unit": "W"
+        "displayString": "Grid Power Total",
+        "unit": "W",
+        "datatype": "int",
+        "division": 1000,
+        "divisionDigits": 2,
+        "divisionUnit": "kW"
     },
     "sum_output_inverter_ac": {
         "address": 40974,
         "type": ModbusDataType.INT32,
         "resolution": 1,
         "digits_round": 0,
-        "update_frequency": 1,
-        "display_string": "Sum output inverter AC",
-        "unit": "W"
+        "displayString": "Sum output inverter AC",
+        "unit": "W",
+        "datatype": "int",
+        "division": 1000,
+        "divisionDigits": 2,
+        "divisionUnit": "kW"
     },
     "sum_pv_power_inverter_dc": {
         "address": 40976,
         "type": ModbusDataType.INT32,
         "resolution": 1,
         "digits_round": 0,
-        "update_frequency": 1,
-        "display_string": "Sum PV power inverter DC",
-        "unit": "W"
+        "displayString": "Sum PV power inverter DC",
+        "unit": "W",
+        "datatype": "int",
+        "division": 1000,
+        "divisionDigits": 2,
+        "divisionUnit": "kW"
     },
     "home_consumption": {
         "address": 40982,
         "type": ModbusDataType.INT32,
         "resolution": 1,
         "digits_round": 0,
-        "update_frequency": 1,
-        "display_string": "Home Consumption",
-        "unit": "W"
+        "displayString": "Home Consumption",
+        "unit": "W",
+        "datatype": "int",
+        "division": 1000,
+        "divisionDigits": 2,
+        "divisionUnit": "kW"
     },
     "sum_battery_charge_discharge_dc": {
         "address": 40984,
         "type": ModbusDataType.INT32,
         "resolution": 1,
         "digits_round": 0,
-        "update_frequency": 1,
-        "display_string": "Sum battery charge / discharge DC",
-        "unit": "W"
+        "displayString": "Sum battery charge / discharge DC",
+        "unit": "W",
+        "datatype": "int",
+        "division": 1000,
+        "divisionDigits": 2,
+        "divisionUnit": "kW"
     },
     "system_state_of_charge": {
         "address": 40986,
         "type": ModbusDataType.UINT16,
         "resolution": 1,
         "digits_round": 0,
-        "update_frequency": 1,
-        "display_string": "System state of charge",
-        "unit": "%"
+        "displayString": "System state of charge",
+        "unit": "%",
+        "datatype": "int"
     },
     "home_consumption_from_pv": {
         "address": 40988,
         "type": ModbusDataType.UINT32,
         "resolution": 1,
         "digits_round": 0,
-        "update_frequency": 1,
-        "display_string": "Home consumption from PV",
-        "unit": "W"
+        "displayString": "Home consumption from PV",
+        "unit": "W",
+        "datatype": "int",
+        "division": 1000,
+        "divisionDigits": 2,
+        "divisionUnit": "kW"
     },
     "home_consumption_from_battery": {
         "address": 40990,
         "type": ModbusDataType.UINT32,
         "resolution": 1,
         "digits_round": 0,
-        "update_frequency": 1,
-        "display_string": "Home consumption from battery",
-        "unit": "W"
+        "displayString": "Home consumption from battery",
+        "unit": "W",
+        "datatype": "int",
+        "division": 1000,
+        "divisionDigits": 2,
+        "divisionUnit": "kW"
     },
     "home_consumption_from_grid": {
         "address": 40992,
         "type": ModbusDataType.UINT32,
         "resolution": 1,
         "digits_round": 0,
-        "update_frequency": 1,
-        "display_string": "Home consumption from grid",
-        "unit": "W"
+        "displayString": "Home consumption from grid",
+        "unit": "W",
+        "datatype": "int",
+        "division": 1000,
+        "divisionDigits": 2,
+        "divisionUnit": "kW"
     },
     "active_charge_mode": {
         "address": 40994,
         "type": ModbusDataType.UINT16,
         "resolution": 1,
         "digits_round": 0,
-        "update_frequency": 1,
-        "display_string": "Active charge mode",
-        "unit": ""
+        "displayString": "Active charge mode",
+        "unit": "",
+        "datatype": "int"
     },
     "sum_wallbox_charge_power_total": {
         "address": 40996,
         "type": ModbusDataType.UINT32,
         "resolution": 1,
         "digits_round": 0,
-        "update_frequency": 1,
-        "display_string": "Sum wallbox charge power total",
-        "unit": "W"
+        "displayString": "Sum wallbox charge power total",
+        "unit": "W",
+        "datatype": "int",
+        "division": 1000,
+        "divisionDigits": 2,
+        "divisionUnit": "kW"
     },
     "sum_wallbox_charge_power_pv": {
         "address": 40998,
         "type": ModbusDataType.UINT32,
         "resolution": 1,
         "digits_round": 0,
-        "update_frequency": 1,
-        "display_string": "Sum wallbox charge power PV",
-        "unit": "W"
+        "displayString": "Sum wallbox charge power PV",
+        "unit": "W",
+        "datatype": "int",
+        "division": 1000,
+        "divisionDigits": 2,
+        "divisionUnit": "kW"
     },
     "sum_wallbox_charge_power_battery": {
         "address": 41000,
         "type": ModbusDataType.UINT32,
         "resolution": 1,
         "digits_round": 0,
-        "update_frequency": 1,
-        "display_string": "Sum wallbox charge power battery",
-        "unit": "W"
+        "displayString": "Sum wallbox charge power battery",
+        "unit": "W",
+        "datatype": "int",
+        "division": 1000,
+        "divisionDigits": 2,
+        "divisionUnit": "kW"
     },
     "sum_wallbox_charge_power_grid": {
         "address": 41002,
         "type": ModbusDataType.UINT32,
         "resolution": 1,
         "digits_round": 0,
-        "update_frequency": 1,
-        "display_string": "Sum wallbox charge power grid",
-        "unit": "W"
+        "displayString": "Sum wallbox charge power grid",
+        "unit": "W",
+        "datatype": "int",
+        "division": 1000,
+        "divisionDigits": 2,
+        "divisionUnit": "kW"
     },
     "sum_inverter_control_values": {
         "address": 41004,
         "type": ModbusDataType.UINT32,
         "resolution": 1,
         "digits_round": 0,
-        "update_frequency": 1,
-        "display_string": "Sum inverter control values",
-        "unit": "W"
-    }
+        "displayString": "Sum inverter control values",
+        "unit": "W",
+        "datatype": "int",
+        "division": 1000,
+        "divisionDigits": 2,
+        "divisionUnit": "kW"
+    },
+    "active_power_charging": {
+        "address": 49246,
+        "type": ModbusDataType.UINT64,
+        "resolution": 0.001,
+        "digits_round": 0,
+        "display_line": 2,
+        "displayString": "Ladeleistung",
+        "unit": "kW",
+        "datatype": "int",
+        "division": 1000,
+        "divisionDigits": 2,
+        "divisionUnit": "kW"
+    },
+    "current_session_duration": {
+        "address": 49258,
+        "type": ModbusDataType.UINT64,
+        "resolution": 1,
+        "digits_round": 2,
+        "displayString": "Wallbox Verbindungsdauer",
+        "unit": "min",
+        "datatype": "int",
+        "division": 60,
+        "divisionDigits": 1,
+        "divisionUnit": "h"
+    },
+    "current_session_energy": {
+        "address": 49254,
+        "type": ModbusDataType.UINT64,
+        "resolution": 0.001,
+        "digits_round": 0,
+        "display_line": 3,
+        "displayString": "Energie",
+        "unit": "kWh",
+        "datatype": "int"
+    },
 }

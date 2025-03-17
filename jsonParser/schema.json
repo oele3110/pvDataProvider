@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "number"
+    },
+    "pvData": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "endpoint": {
+            "type": "string"
+          },
+          "datatype": {
+            "type": "string",
+            "enum": [
+              "int",
+              "float"
+            ]
+          },
+          "value": {
+            "oneOf": [
+              {
+                "type": "integer",
+                "description": "Integer value"
+              },
+              {
+                "type": "number",
+                "description": "Floating point value",
+                "not": {
+                  "type": "integer"
+                }
+              }
+            ]
+          },
+          "unit": {
+            "type": "string"
+          },
+          "displayString": {
+            "type": "string"
+          },
+          "division": {
+            "type": "number"
+          },
+          "divisionUnit": {
+            "type": "string"
+          },
+          "divisionDigits": {
+            "type": "integer"
+          },
+          "mapping": {
+            "type": "object",
+            "patternProperties": {
+              "^[1-9][0-9]*$": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "endpoint",
+          "datatype",
+          "value",
+          "unit",
+          "displayString"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "pvData"
+  ],
+  "additionalProperties": false
+}

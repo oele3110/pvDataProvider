@@ -1,0 +1,75 @@
+{
+  "version": 1.0,
+  "pvData": [
+    {
+      "endpoint": "power_heater_rod",
+      "datatype": "int",
+      "value": 22,
+      "unit": "W",
+      "displayString": "Leistung Heizstab",
+      "division": 1000,
+      "divisionUnit": "kW",
+      "divisionDigits": 2
+    },
+    {
+      "endpoint": "temperature_heater_rod",
+      "datatype": "float",
+      "value": 44.5,
+      "unit": "°C",
+      "displayString": "Temperatur Heizstab"
+    },
+    {
+      "endpoint": "grid_power_total",
+      "datatype": "int",
+      "value": 1202,
+      "unit": "W",
+      "displayString": "Gesamtleistung Netz",
+      "division": 1000,
+      "divisionUnit": "kW",
+      "divisionDigits": 2
+    },
+    {
+      "endpoint": "battery_soc",
+      "datatype": "int",
+      "value": 80,
+      "unit": "%",
+      "displayString": "Batterie Ladestand"
+    },
+    {
+      "endpoint": "active_charge_mode",
+      "datatype": "int",
+      "value": 1,
+      "unit": "",
+      "displayString": "Lademodus",
+      "mapping": {
+        "1": "Nicht verbunden",
+        "2": "Verbunden",
+        "3": "Pausiert",
+        "4": "Initialisierung",
+        "5": "Laden",
+        "6": "Fehler",
+        "7": "Service Modus"
+      }
+    },
+    {
+      "endpoint": "current_session_duration",
+      "datatype": "int",
+      "value": 120,
+      "unit": "s",
+      "displayString": "Wallbox Verbindungsdauer",
+      "division": 60,
+      "divisionUnit": "min",
+      "divisionDigits": 0
+    },
+    {
+      "endpoint": "current_session_energy",
+      "datatype": "int",
+      "value": 1200,
+      "unit": "Wh",
+      "displayString": "Energie Laden",
+      "division": 1000,
+      "divisionUnit": "kWh",
+      "divisionDigits": 2
+    }
+  ]
+}

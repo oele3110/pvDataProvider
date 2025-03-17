@@ -1,8 +1,10 @@
 import asyncio
 
 from configs.HeaterRodConfig import heater_rod_config
+from configs.ModbusConfig import modbus_config
 from configs.MqttConfig import mqtt_config
 from heaterRod.HeaterRodClient import HeaterRodClient
+from jsonParser.JsonConverter import JsonConverter
 from modbus.ModbusClient import ModbusClient
 from mqtt.MqttClient import MqttClient
 
@@ -18,10 +20,12 @@ heater_rod_data_store = {}
 mqtt_data_store = {}
 modbus_data_store = {}
 
+json_converter = JsonConverter(heater_rod_config, mqtt_config, modbus_config)
 
-async def print_data_store(label, data_store):
+
+async def print_data_stores():
     while True:
-        print(f"{label}: {data_store}")
+        data = json_converter.convert_data(heater_rod_data_store, mqtt_data_store, modbus_data_store)
         await asyncio.sleep(1)
 
 
@@ -37,11 +41,9 @@ async def main():
     print("Start MqttClient")
     mqtt_task = asyncio.create_task(mqtt_client.start())
 
-    print_task_modbus = asyncio.create_task(print_data_store("ModbusClient", modbus_data_store))
-    print_task_heater_rod = asyncio.create_task(print_data_store("HeaterRodClient", heater_rod_data_store))
-    print_task_mqtt = asyncio.create_task(print_data_store("MqttClient", mqtt_data_store))
+    print_task = asyncio.create_task(print_data_stores())
 
-    tasks = [heater_rod_task, modbus_task, mqtt_task, print_task_modbus, print_task_heater_rod, print_task_mqtt]
+    tasks = [heater_rod_task, modbus_task, mqtt_task, print_task]
 
     try:
         await asyncio.gather(*tasks)
