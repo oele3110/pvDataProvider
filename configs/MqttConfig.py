@@ -1,67 +1,129 @@
 mqtt_config = {
-    "mqtt/0/knx/Leistung_Backofen": {
+    "knx/Leistung_Backofen": {
         "digits_round": 0,
-        "display_string": "Leistung Backofen",
-        "unit": "W"
+        "displayString": "Leistung Backofen",
+        "unit": "W",
+        "endpoint": "power_oven",
+        "datatype": "int",
+        "division": 1000,
+        "divisionDigits": 2,
+        "divisionUnit": "kW"
     },
-    "mqtt/0/knx/Leistung_Badheizkoerper_oben": {
+    "knx/Leistung_Badheizkoerper_oben": {
         "digits_round": 0,
-        "display_string": "Leistung Badheizkörper oben",
-        "unit": "W"
+        "displayString": "Leistung Badheizkörper oben",
+        "unit": "W",
+        "endpoint": "power_bathroom_heater_top_floor",
+        "datatype": "int",
+        "division": 1000,
+        "divisionDigits": 2,
+        "divisionUnit": "kW"
     },
-    "mqtt/0/knx/Leistung_Badheizkoerper_unten": {
+    "knx/Leistung_Badheizkoerper_unten": {
         "digits_round": 0,
-        "display_string": "Leistung Badheizkörper unten",
-        "unit": "W"
+        "displayString": "Leistung Badheizkörper unten",
+        "unit": "W",
+        "endpoint": "power_bathroom_heater_ground_floor",
+        "datatype": "int",
+        "division": 1000,
+        "divisionDigits": 2,
+        "divisionUnit": "kW"
     },
-    "mqtt/0/knx/Leistung_Geschirrspueler": {
+    "knx/Leistung_Geschirrspueler": {
         "digits_round": 0,
-        "display_string": "Leistung Geschirrspüler",
-        "unit": "W"
+        "displayString": "Leistung Geschirrspüler",
+        "unit": "W",
+        "endpoint": "power_dishwasher",
+        "datatype": "int",
+        "division": 1000,
+        "divisionDigits": 2,
+        "divisionUnit": "kW"
     },
-    "mqtt/0/knx/Leistung_KWL": {
+    "knx/Leistung_KWL": {
         "digits_round": 0,
-        "display_string": "Leistung KWL",
-        "unit": "W"
+        "displayString": "Leistung KWL",
+        "unit": "W",
+        "endpoint": "power_kwl",
+        "datatype": "int",
+        "division": 1000,
+        "divisionDigits": 2,
+        "divisionUnit": "kW"
     },
-    "mqtt/0/knx/Leistung_Kuehlschrank": {
+    "knx/Leistung_Kuehlschrank": {
         "digits_round": 0,
-        "display_string": "Leistung Kühlschrank",
-        "unit": "W"
+        "displayString": "Leistung Kühlschrank",
+        "unit": "W",
+        "endpoint": "power_fridge",
+        "datatype": "int",
+        "division": 1000,
+        "divisionDigits": 2,
+        "divisionUnit": "kW"
     },
-    "mqtt/0/knx/Leistung_Kuehlschrank_HWR": {
+    "knx/Leistung_Kuehlschrank_HWR": {
         "digits_round": 0,
-        "display_string": "Leistung Kühlschrank HWR",
-        "unit": "W"
+        "displayString": "Leistung Kühlschrank HWR",
+        "unit": "W",
+        "endpoint": "power_fridge_hwr",
+        "datatype": "int",
+        "division": 1000,
+        "divisionDigits": 2,
+        "divisionUnit": "kW"
     },
-    "mqtt/0/knx/Leistung_TV": {
+    "knx/Leistung_TV": {
         "digits_round": 0,
-        "display_string": "Leistung TV",
-        "unit": "W"
+        "displayString": "Leistung TV",
+        "unit": "W",
+        "endpoint": "power_tv",
+        "datatype": "int",
+        "division": 1000,
+        "divisionDigits": 2,
+        "divisionUnit": "kW"
     },
-    "mqtt/0/knx/Leistung_TV_Zubehoer": {
+    "knx/Leistung_TV_Zubehoer": {
         "digits_round": 0,
-        "display_string": "Leistung TV-Zubehör",
-        "unit": "W"
+        "displayString": "Leistung TV-Zubehör",
+        "unit": "W",
+        "endpoint": "power_tv_accessory",
+        "datatype": "int",
+        "division": 1000,
+        "divisionDigits": 2,
+        "divisionUnit": "kW"
     },
-    "mqtt/0/knx/Leistung_Trockner": {
+    "knx/Leistung_Trockner": {
         "digits_round": 0,
-        "display_string": "Leistung Trockner",
-        "unit": "W"
+        "displayString": "Leistung Trockner",
+        "unit": "W",
+        "endpoint": "power_dryer",
+        "datatype": "int",
+        "division": 1000,
+        "divisionDigits": 2,
+        "divisionUnit": "kW"
     },
-    "mqtt/0/knx/Leistung_Waschmaschine": {
+    "knx/Leistung_Waschmaschine": {
         "digits_round": 0,
-        "display_string": "Leistung Waschmaschine",
-        "unit": "W"
+        "displayString": "Leistung Waschmaschine",
+        "unit": "W",
+        "endpoint": "power_washing_machine",
+        "datatype": "int",
+        "division": 1000,
+        "divisionDigits": 2,
+        "divisionUnit": "kW"
     },
-    "mqtt/0/knx/Leistung_Wasserenthaertung": {
+    "knx/Leistung_Wasserenthaertung": {
         "digits_round": 0,
-        "display_string": "Leistung Wasserenthärtung",
-        "unit": "W"
+        "displayString": "Leistung Wasserenthärtung",
+        "unit": "W",
+        "endpoint": "power_water_softening",
+        "datatype": "int",
+        "division": 1000,
+        "divisionDigits": 2,
+        "divisionUnit": "kW"
     },
-    "mqtt/0/knx/Warmwasser_Temperatur": {
+    "knx/Warmwasser_Temperatur": {
         "digits_round": 1,
-        "display_string": "Warmwassertemperatur",
-        "unit": "°C"
+        "displayString": "Warmwassertemperatur",
+        "unit": "°C",
+        "endpoint": "temperature_hot_water",
+        "datatype": "float"
     }
 }

@@ -9,7 +9,7 @@ class MqttClient:
         self.port = port
         self.data_store = data_store
         self.config = config
-        self.topics = [(topic, 0) for topic in config]
+        self.topics = [("mqtt/0/" + topic, 0) for topic in config]
         print("Initializing MqttClient ...")
         # setup MQTT-Client
         self.client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
@@ -17,7 +17,10 @@ class MqttClient:
 
     # callback for incoming messages
     def on_message(self, mqtt_client, userdata, message):
-        self.data_store[message.topic] = process_sensor_value(float(message.payload.decode()), self.config["mqtt/0/" + message.topic])
+        try:
+            self.data_store[message.topic] = process_sensor_value(float(message.payload.decode()), self.config[message.topic])
+        except KeyError:
+            print(f"KeyError: {message.topic}")
 
     async def start(self):
         print("Starting MqttClient ...")
