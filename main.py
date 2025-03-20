@@ -1,4 +1,5 @@
 import asyncio
+import json
 
 from configs.HeaterRodConfig import heater_rod_config
 from configs.ModbusConfig import modbus_config
@@ -7,6 +8,7 @@ from heaterRod.HeaterRodClient import HeaterRodClient
 from jsonParser.JsonConverter import JsonConverter
 from modbus.ModbusClient import ModbusClient
 from mqtt.MqttClient import MqttClient
+from websocket.WebsocketServer import start_websocket_server, shutdown, update_data
 
 # heater rod configuration
 heater_rod_ipaddress = "192.168.178.174"
@@ -21,11 +23,14 @@ mqtt_data_store = {}
 modbus_data_store = {}
 
 json_converter = JsonConverter(heater_rod_config, mqtt_config, modbus_config)
+json_data = json.dumps({})
 
 
-async def print_data_stores():
+async def convert_data_stores():
+    global json_data
     while True:
-        data = json_converter.convert_data(heater_rod_data_store, mqtt_data_store, modbus_data_store)
+        json_data = json_converter.convert_data(heater_rod_data_store, mqtt_data_store, modbus_data_store)
+        update_data(json_data)
         await asyncio.sleep(1)
 
 
@@ -41,9 +46,11 @@ async def main():
     print("Start MqttClient")
     mqtt_task = asyncio.create_task(mqtt_client.start())
 
-    print_task = asyncio.create_task(print_data_stores())
+    convert_task = asyncio.create_task(convert_data_stores())
 
-    tasks = [heater_rod_task, modbus_task, mqtt_task, print_task]
+    websocket_task = asyncio.create_task(start_websocket_server())
+
+    tasks = [heater_rod_task, modbus_task, mqtt_task, convert_task, websocket_task]
 
     try:
         await asyncio.gather(*tasks)
@@ -53,7 +60,7 @@ async def main():
         print(f"Unexpected error: {e}")
     finally:
         print("Stopping all tasks ...")
-        await asyncio.gather(heater_rod_client.stop(), modbus_client.stop(), mqtt_client.stop(), return_exceptions=True)
+        await asyncio.gather(heater_rod_client.stop(), modbus_client.stop(), mqtt_client.stop(), shutdown(), return_exceptions=True)
         # wait 200 ms to give the tasks time to stop and shutdown clean
         await asyncio.sleep(0.2)
         # cancel all tasks
