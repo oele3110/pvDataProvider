@@ -72,7 +72,8 @@
     }
   },
   "required": [
-    "pvData"
+    "pvData",
+    "version"
   ],
   "additionalProperties": false
 }

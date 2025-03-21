@@ -180,7 +180,6 @@ modbus_config = {
         "type": ModbusDataType.UINT64,
         "resolution": 0.001,
         "digits_round": 0,
-        "display_line": 2,
         "displayString": "Ladeleistung",
         "unit": "kW",
         "datatype": "int",
@@ -191,8 +190,8 @@ modbus_config = {
     "current_session_duration": {
         "address": 49258,
         "type": ModbusDataType.UINT64,
-        "resolution": 1,
-        "digits_round": 2,
+        "resolution": 1 / 60,
+        "digits_round": 0,
         "displayString": "Wallbox Verbindungsdauer",
         "unit": "min",
         "datatype": "int",
@@ -205,9 +204,11 @@ modbus_config = {
         "type": ModbusDataType.UINT64,
         "resolution": 0.001,
         "digits_round": 0,
-        "display_line": 3,
         "displayString": "Energie",
-        "unit": "kWh",
-        "datatype": "int"
+        "unit": "Wh",
+        "datatype": "int",
+        "division": 1000,
+        "divisionDigits": 2,
+        "divisionUnit": "kWh"
     },
 }
