@@ -17,7 +17,10 @@ async def _send_data():
     while not shutdown_event.is_set():
         # only send data if there are connected clients
         if connected_clients:
-            await asyncio.gather(*(client.send(data_to_send) for client in connected_clients))
+            try:
+                await asyncio.gather(*(client.send(data_to_send) for client in connected_clients))
+            except websockets.exceptions.ConnectionClosedOK:
+                print("Client already disconnected, sending data not possible")
         await asyncio.sleep(1)
 
 
@@ -40,7 +43,6 @@ async def shutdown():
     if connected_clients:
         print(f"📢 all clients informed about shutdown")
         tasks = [client.close(code=1001, reason="Server shutdown") for client in connected_clients]
-        # await asyncio.gather(*(client.close(code=1001, reason="Server shutdown") for client in connected_clients))
         await asyncio.gather(*tasks)
         await asyncio.sleep(1)  # wait a bit to ensure that all close frames are sent
 
