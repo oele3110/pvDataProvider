@@ -1,8 +1,11 @@
 import asyncio
+
 import websockets
 
 connected_clients = set()
 shutdown_event = asyncio.Event()  # event for shutdown
+server_instance = None
+send_task = None
 
 data_to_send = None
 
@@ -18,7 +21,7 @@ async def _send_data():
         # only send data if there are connected clients
         if connected_clients:
             try:
-                await asyncio.gather(*(client.send(data_to_send) for client in connected_clients))
+                await asyncio.gather(*(client.send(data_to_send) for client in connected_clients), return_exceptions=True)
             except websockets.exceptions.ConnectionClosedOK:
                 print("Client already disconnected, sending data not possible")
         await asyncio.sleep(1)
@@ -31,28 +34,42 @@ async def _handle_client(websocket):
     try:
         await websocket.wait_closed()
     finally:
-        if websocket in connected_clients:
-            connected_clients.remove(websocket)
+        if not shutdown_event.is_set():
+            connected_clients.discard(websocket)
             print(f"❌ Client disconnected: {websocket.remote_address}")
             print(f"Connected clients: {len(connected_clients)}")
 
 
-async def shutdown():
+async def shutdown_websocket_server():
+    global server_instance
     print(f"🔴 shutting down server ...")
 
     if connected_clients:
         print(f"📢 all clients informed about shutdown")
-        tasks = [client.close(code=1001, reason="Server shutdown") for client in connected_clients]
-        await asyncio.gather(*tasks)
-        await asyncio.sleep(1)  # wait a bit to ensure that all close frames are sent
+        try:
+            tasks = [client.close(code=1001, reason="Server shutdown") for client in connected_clients]
+            await asyncio.gather(*tasks)
+            await asyncio.sleep(1)  # wait a bit to ensure that all close frames are sent
+        except Exception as e:
+            print(f"⚠️ Error closing client: {e}")
 
     shutdown_event.set()
 
+    if server_instance:
+        server_instance.close()
+        await server_instance.wait_closed()
+        print("✅ WebSocket server closed")
+
 
 async def start_websocket_server():
-    # start websocket server and stop it if shutdown event is set
-    stop = asyncio.Future()  # future to stop server
+    global server_instance, send_task, shutdown_event
+    server_instance = await websockets.serve(_handle_client, "0.0.0.0", 8765)
+    send_task = asyncio.create_task(_send_data())
+    await shutdown_event.wait()
 
-    async with websockets.serve(_handle_client, "0.0.0.0", 8765):
-        print("🚀 websocket server running of port 8765...")
-        await asyncio.gather(_send_data(), stop)  # run server until stop signal
+    if send_task:
+        send_task.cancel()
+        try:
+            await send_task
+        except asyncio.CancelledError:
+            print("📴 send_data task cancelled")
