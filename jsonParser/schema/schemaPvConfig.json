@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "number"
+    },
+    "pvConfig": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "endpoint": {
+            "type": "string"
+          },
+          "datatype": {
+            "type": "string",
+            "enum": [
+              "int",
+              "float"
+            ]
+          },
+          "unit": {
+            "type": "string"
+          },
+          "displayString": {
+            "type": "string"
+          },
+          "division": {
+            "type": "number"
+          },
+          "divisionUnit": {
+            "type": "string"
+          },
+          "divisionDigits": {
+            "type": "integer"
+          },
+          "mapping": {
+            "type": "object",
+            "patternProperties": {
+              "^[1-9][0-9]*$": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "endpoint",
+          "datatype",
+          "unit",
+          "displayString"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "pvConfig",
+    "version"
+  ],
+  "additionalProperties": false
+}

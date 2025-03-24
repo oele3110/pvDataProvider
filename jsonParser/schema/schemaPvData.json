@@ -13,13 +13,6 @@
           "endpoint": {
             "type": "string"
           },
-          "datatype": {
-            "type": "string",
-            "enum": [
-              "int",
-              "float"
-            ]
-          },
           "value": {
             "oneOf": [
               {
@@ -34,38 +27,11 @@
                 }
               }
             ]
-          },
-          "unit": {
-            "type": "string"
-          },
-          "displayString": {
-            "type": "string"
-          },
-          "division": {
-            "type": "number"
-          },
-          "divisionUnit": {
-            "type": "string"
-          },
-          "divisionDigits": {
-            "type": "integer"
-          },
-          "mapping": {
-            "type": "object",
-            "patternProperties": {
-              "^[1-9][0-9]*$": {
-                "type": "string"
-              }
-            },
-            "additionalProperties": false
           }
         },
         "required": [
           "endpoint",
-          "datatype",
-          "value",
-          "unit",
-          "displayString"
+          "value"
         ],
         "additionalProperties": false
       }

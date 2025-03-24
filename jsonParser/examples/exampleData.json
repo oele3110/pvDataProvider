@@ -1,0 +1,33 @@
+{
+  "version": 1.0,
+  "pvData": [
+    {
+      "endpoint": "power_heater_rod",
+      "value": 22
+    },
+    {
+      "endpoint": "temperature_heater_rod",
+      "value": 44.5
+    },
+    {
+      "endpoint": "grid_power_total",
+      "value": 1202
+    },
+    {
+      "endpoint": "battery_soc",
+      "value": 80
+    },
+    {
+      "endpoint": "active_charge_mode",
+      "value": 1
+    },
+    {
+      "endpoint": "current_session_duration",
+      "value": 120
+    },
+    {
+      "endpoint": "current_session_energy",
+      "value": 1200
+    }
+  ]
+}
