@@ -10,7 +10,7 @@ from heaterRod.HeaterRodClient import HeaterRodClient
 from jsonParser.JsonConverter import JsonConverter
 from modbus.ModbusClient import ModbusClient
 from mqtt.MqttClient import MqttClient
-from websocket.WebsocketServer import start_websocket_server, shutdown_websocket_server, update_data, shutdown_event
+from websocket.WebsocketServer import start_websocket_server, shutdown_websocket_server, update_data, shutdown_event, set_config_data
 
 # heater rod configuration
 heater_rod_ipaddress = "192.168.178.174"
@@ -51,6 +51,7 @@ async def convert_data_stores():
 
 async def main():
     setup_signal_handling()
+    set_config_data(json_converter.convert_config())
 
     heater_rod_client = HeaterRodClient(heater_rod_ipaddress, heater_rod_config, heater_rod_data_store)
     modbus_client = ModbusClient(modbus_data_store)

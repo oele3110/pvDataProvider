@@ -1,11 +1,11 @@
 import json
 
-JSON_VERSION = 1.0
+JSON_VERSION = 1.1
 
 
-def _convert_data(heater_rod_data_store, config):
-    data = []
-    for key, value in heater_rod_data_store.items():
+def _convert_config(config):
+    config_result = []
+    for key, value in config.items():
         try:
             obj = {}
             config_data = config[key]
@@ -13,7 +13,6 @@ def _convert_data(heater_rod_data_store, config):
                 obj["endpoint"] = config_data["endpoint"]
             else:
                 obj["endpoint"] = key
-            obj["value"] = value
             obj["datatype"] = config_data["datatype"]
             obj["unit"] = config_data["unit"]
             obj["displayString"] = config_data["displayString"]
@@ -27,10 +26,28 @@ def _convert_data(heater_rod_data_store, config):
             if "mapping" in config_data:
                 obj["mapping"] = config_data["mapping"]
 
-            data.append(obj)
+            config_result.append(obj)
         except KeyError:
             print(f"KeyError: {key}")
-    return data
+    return config_result
+
+
+def _convert_data(data_store, config):
+    data_result = []
+    for key, value in data_store.items():
+        try:
+            obj = {}
+            config_data = config[key]
+            if "endpoint" in config_data:
+                obj["endpoint"] = config_data["endpoint"]
+            else:
+                obj["endpoint"] = key
+            obj["value"] = value
+
+            data_result.append(obj)
+        except KeyError:
+            print(f"KeyError: {key}")
+    return data_result
 
 
 class JsonConverter:
@@ -38,6 +55,15 @@ class JsonConverter:
         self.heater_rod_config = heater_rod_config
         self.mqtt_config = mqtt_config
         self.modbus_config = modbus_config
+
+    def convert_config(self):
+        heater_rod_config = _convert_config(self.heater_rod_config)
+        mqtt_config = _convert_config(self.mqtt_config)
+        modbus_config = _convert_config(self.modbus_config)
+        config = heater_rod_config.copy()
+        config.extend(mqtt_config)
+        config.extend(modbus_config)
+        return json.dumps({"version": JSON_VERSION, "pvConfig": config})
 
     def convert_data(self, heater_rod_data_store, mqtt_data_store, modbus_data_store):
         heater_rod_data = _convert_data(heater_rod_data_store, self.heater_rod_config)
@@ -49,4 +75,4 @@ class JsonConverter:
         data = heater_rod_data.copy()
         data.extend(mqtt_data)
         data.extend(modbus_data)
-        return json.dumps({"version": JSON_VERSION, "pvData": data}, indent=2)
+        return json.dumps({"version": JSON_VERSION, "pvData": data})

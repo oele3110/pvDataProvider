@@ -8,6 +8,12 @@ server_instance = None
 send_task = None
 
 data_to_send = None
+config_data = None
+
+
+def set_config_data(data):
+    global config_data
+    config_data = data
 
 
 def update_data(data):
@@ -27,10 +33,21 @@ async def _send_data():
         await asyncio.sleep(1)
 
 
+async def _send_config(client):
+    if not shutdown_event.is_set():
+        try:
+            await client.send(config_data)
+        except Exception as e:
+            print(f"⚠️ Could not send config to client: {e}")
+
+
 async def _handle_client(websocket):
     connected_clients.add(websocket)
     print(f"✅ Client connected: {websocket.remote_address}")
     print(f"Connected clients: {len(connected_clients)}")
+
+    await _send_config(websocket)
+    print(f"✅ Config data sent to client: {websocket.remote_address}")
     try:
         await websocket.wait_closed()
     finally:
