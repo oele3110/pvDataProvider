@@ -256,7 +256,7 @@ devices:
   mqtt:
     broker: "192.168.178.182"   # ioBroker
     port: 1883
-    topic_prefix: "mqtt/0/"
+    topic_prefix: ""
     topics:
       "knx/Leistung_Backofen":
         digits_round: 0

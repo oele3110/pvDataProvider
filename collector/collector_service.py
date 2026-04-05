@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from collector.http_reader import HttpReader
 from collector.modbus_reader import ModbusReaderClient
 from collector.mqtt_reader import MqttReader
-from config.loader import load_config, get_modbus_config, get_heater_rod_config, get_mqtt_config
+from config.loader import load_config, get_modbus_config, get_heater_rod_config, get_mqtt_config, get_influxdb_config
 from db.influx_client import InfluxClient
 
 logger = logging.getLogger(__name__)
@@ -38,9 +38,16 @@ class CollectorService:
         def _on_mqtt_success() -> None:
             self.last_seen["mqtt"] = datetime.now(timezone.utc)
 
+        mqtt_cfg = get_mqtt_config(cfg)
+        # Build mapping: short topic key → endpoint name (for stable consumer keys)
+        self._consumer_key_map: dict[str, str] = {
+            short: topic_cfg.get("endpoint", short.replace("knx/", ""))
+            for short, topic_cfg in mqtt_cfg["topics"].items()
+        }
+
         self._modbus_reader = ModbusReaderClient(get_modbus_config(cfg), self.modbus_data, _on_modbus_success)
         self._http_reader = HttpReader(get_heater_rod_config(cfg), self.heater_rod_data, _on_heater_success)
-        self._mqtt_reader = MqttReader(get_mqtt_config(cfg), self.mqtt_data, _on_mqtt_success)
+        self._mqtt_reader = MqttReader(mqtt_cfg, self.mqtt_data, _on_mqtt_success)
         self._influx = InfluxClient(cfg["influxdb"])
 
         self._stop_event = asyncio.Event()
@@ -104,10 +111,10 @@ class CollectorService:
         if self_consumption_w is not None and home is not None and home > 0:
             autarky_rate_pct = round(self_consumption_w / home * 100, 1)
 
-        # Consumer topics — strip the "knx/" prefix for cleaner keys
+        # All expected consumer keys pre-filled with None, then overwritten with live values
         consumers = {
-            key.replace("knx/", ""): self.mqtt_data.get(key)
-            for key in self.mqtt_data
+            endpoint: self.mqtt_data.get(short)
+            for short, endpoint in self._consumer_key_map.items()
         }
 
         return {
