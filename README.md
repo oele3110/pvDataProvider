@@ -124,9 +124,31 @@ export PV_INFLUX_TOKEN="pvmonitor-dev-token"
 
 ## Starting the server
 
+### Local development (Windows/macOS)
+
+Run InfluxDB only via Docker, and the backend directly with uvicorn:
+
 ```bash
+docker compose up -d influxdb
 uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
 ```
+
+### Production (Raspberry Pi)
+
+On the Pi, both InfluxDB and the backend run as Docker containers. `network_mode: host` is required so the backend container can reach the Modbus devices, MQTT broker, and heating rod on the local network.
+
+```bash
+# 1. Create .env file from the example
+cp .env.example .env
+
+# 2. Fill in the values
+nano .env
+
+# 3. Start everything
+docker compose up -d
+```
+
+After the first start, create the additional InfluxDB buckets and aggregation tasks as described in steps 4 and 5 above.
 
 ## API
 
@@ -156,6 +178,8 @@ pvDataProvider/
 │   └── influx_client.py    # InfluxDB wrapper
 ├── influxdb/
 │   └── tasks/              # Flux tasks for aggregation
-├── docker-compose.yaml     # InfluxDB container
+├── docker-compose.yaml     # InfluxDB + backend containers
+├── Dockerfile              # Backend container image
+├── .env.example            # Environment variable template
 └── requirements.txt
 ```
