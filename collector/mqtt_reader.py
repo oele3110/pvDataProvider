@@ -21,13 +21,14 @@ def _apply_transforms(raw_value: float, field_cfg: dict) -> int | float:
 
 
 class MqttReader(BaseReader):
-    def __init__(self, mqtt_cfg: dict, data_store: dict) -> None:
+    def __init__(self, mqtt_cfg: dict, data_store: dict, on_success: callable = None) -> None:
         self._broker: str = mqtt_cfg["broker"]
         self._port: int = mqtt_cfg["port"]
         self._prefix: str = mqtt_cfg.get("topic_prefix", "")
         # topics dict: short topic → field config
         self._topics: dict = mqtt_cfg["topics"]
         self._data_store = data_store
+        self._on_success = on_success
 
         # Build lookup: full subscribed topic → (short topic key, field config)
         self._topic_lookup: dict[str, tuple[str, dict]] = {
@@ -46,6 +47,8 @@ class MqttReader(BaseReader):
             subscriptions = [(topic, 0) for topic in self._topic_lookup]
             client.subscribe(subscriptions)
             logger.info("MqttReader: connected and subscribed to %d topics", len(subscriptions))
+            if self._on_success:
+                self._on_success()
         else:
             logger.error("MqttReader: connection failed with reason code %s", reason_code)
 
@@ -63,6 +66,8 @@ class MqttReader(BaseReader):
         try:
             raw = float(message.payload.decode())
             self._data_store[short_key] = _apply_transforms(raw, field_cfg)
+            if self._on_success:
+                self._on_success()
         except (ValueError, UnicodeDecodeError):
             logger.warning("MqttReader: could not parse payload for topic '%s'", full_topic)
 

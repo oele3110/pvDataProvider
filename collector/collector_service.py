@@ -22,9 +22,25 @@ class CollectorService:
         self.heater_rod_data: dict = {}
         self.mqtt_data: dict = {}
 
-        self._modbus_reader = ModbusReaderClient(get_modbus_config(cfg), self.modbus_data)
-        self._http_reader = HttpReader(get_heater_rod_config(cfg), self.heater_rod_data)
-        self._mqtt_reader = MqttReader(get_mqtt_config(cfg), self.mqtt_data)
+        # Tracks the last successful read timestamp per device
+        self.last_seen: dict[str, datetime | None] = {
+            "modbus": None,
+            "heater_rod": None,
+            "mqtt": None,
+        }
+
+        def _on_modbus_success() -> None:
+            self.last_seen["modbus"] = datetime.now(timezone.utc)
+
+        def _on_heater_success() -> None:
+            self.last_seen["heater_rod"] = datetime.now(timezone.utc)
+
+        def _on_mqtt_success() -> None:
+            self.last_seen["mqtt"] = datetime.now(timezone.utc)
+
+        self._modbus_reader = ModbusReaderClient(get_modbus_config(cfg), self.modbus_data, _on_modbus_success)
+        self._http_reader = HttpReader(get_heater_rod_config(cfg), self.heater_rod_data, _on_heater_success)
+        self._mqtt_reader = MqttReader(get_mqtt_config(cfg), self.mqtt_data, _on_mqtt_success)
         self._influx = InfluxClient(cfg["influxdb"])
 
         self._stop_event = asyncio.Event()

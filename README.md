@@ -84,16 +84,42 @@ Replace the placeholder values in `users.yaml` with the generated hashes.
 
 ### 8. Set environment variables
 
+Two variables are required:
+
+- `PV_INFLUX_TOKEN` — the InfluxDB token defined in `docker-compose.yaml`. The default value is `pvmonitor-dev-token`, no change needed.
+- `PV_JWT_SECRET` — a random secret for signing JWTs. Generate one with:
+  ```bash
+  python -c "import secrets; print(secrets.token_hex(32))"
+  ```
+  Save the output — you will need the same value every time you start the server, otherwise existing tokens become invalid.
+
+**Set for the current session only (lost on terminal close):**
+
 Windows (PowerShell):
 ```powershell
-$env:PV_JWT_SECRET = "$(python -c "import secrets; print(secrets.token_hex(32))")"
+$env:PV_JWT_SECRET = "your-generated-secret"
 $env:PV_INFLUX_TOKEN = "pvmonitor-dev-token"
 ```
 
 Linux/macOS:
 ```bash
-export PV_JWT_SECRET=$(python -c "import secrets; print(secrets.token_hex(32))")
-export PV_INFLUX_TOKEN=pvmonitor-dev-token
+export PV_JWT_SECRET="your-generated-secret"
+export PV_INFLUX_TOKEN="pvmonitor-dev-token"
+```
+
+**Set permanently (recommended):**
+
+Windows (PowerShell):
+```powershell
+[System.Environment]::SetEnvironmentVariable("PV_INFLUX_TOKEN", "pvmonitor-dev-token", "User")
+[System.Environment]::SetEnvironmentVariable("PV_JWT_SECRET", "your-generated-secret", "User")
+```
+Then restart PowerShell.
+
+Linux/macOS — add to `~/.bashrc` or `~/.zshrc`:
+```bash
+export PV_JWT_SECRET="your-generated-secret"
+export PV_INFLUX_TOKEN="pvmonitor-dev-token"
 ```
 
 ## Starting the server

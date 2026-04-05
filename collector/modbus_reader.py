@@ -30,11 +30,12 @@ def _resolve_types(registers: dict) -> dict:
 
 
 class ModbusReaderClient(BaseReader):
-    def __init__(self, modbus_cfg: dict, data_store: dict) -> None:
+    def __init__(self, modbus_cfg: dict, data_store: dict, on_success: callable = None) -> None:
         host: str = modbus_cfg["host"]
         self._poll_interval: float = modbus_cfg.get("poll_interval_s", 1)
         self._registers: dict = _resolve_types(modbus_cfg["registers"])
         self._data_store = data_store
+        self._on_success = on_success
         self._stop_event = asyncio.Event()
         self._task: asyncio.Task | None = None
 
@@ -47,12 +48,16 @@ class ModbusReaderClient(BaseReader):
 
     async def _run(self) -> None:
         while not self._stop_event.is_set():
+            success = False
             for name, cfg in self._registers.items():
                 try:
                     value = self._reader.read_modbus(cfg)
                     self._data_store[name] = value
+                    success = True
                 except Exception:
                     logger.exception("Modbus read failed for register '%s'", name)
+            if success and self._on_success:
+                self._on_success()
             await asyncio.sleep(self._poll_interval)
 
     async def stop(self) -> None:
