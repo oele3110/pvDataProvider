@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//mnt/c/Users/oele3/PycharmProjects/**)",
+      "Bash(rm -rf configs/ modbus/ mqtt/ heaterRod/ jsonParser/ websocket/ utils/ main.py)",
+      "Bash(rmdir /s /q configs modbus mqtt heaterRod jsonParser websocket utils)",
+      "Bash(del main.py)",
+      "Bash(xxd /c/Users/oele3/PycharmProjects/pvDataProvider/README.md)"
+    ]
+  }
+}

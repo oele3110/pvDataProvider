@@ -1,0 +1,386 @@
+influxdb:
+  url: "http://localhost:8086"
+  org: "pvmonitor"
+  # Token comes from PV_INFLUX_TOKEN environment variable
+  buckets:
+    raw: "raw"         # Retention: 14 days — raw W values, 1s resolution
+    hourly: "hourly"   # Retention: 1 year  — aggregated by InfluxDB Task
+    daily: "daily"     # Retention: unlimited — aggregated by InfluxDB Task
+
+devices:
+
+  modbus:
+    host: "192.168.178.133"   # Kostal Plenticore / Smartmeter
+    port: 502
+    poll_interval_s: 1
+    registers:
+      grid_power_total:
+        address: 40972
+        type: INT32
+        resolution: 1
+        digits_round: 0
+        display_string: "Grid Power Total"
+        unit: "W"
+        datatype: int
+        division: 1000
+        division_digits: 2
+        division_unit: "kW"
+
+      sum_output_inverter_ac:
+        address: 40974
+        type: INT32
+        resolution: 1
+        digits_round: 0
+        display_string: "Sum output inverter AC"
+        unit: "W"
+        datatype: int
+        division: 1000
+        division_digits: 2
+        division_unit: "kW"
+
+      sum_pv_power_inverter_dc:
+        address: 40976
+        type: INT32
+        resolution: 1
+        digits_round: 0
+        display_string: "Sum PV power inverter DC"
+        unit: "W"
+        datatype: int
+        division: 1000
+        division_digits: 2
+        division_unit: "kW"
+
+      home_consumption:
+        address: 40982
+        type: INT32
+        resolution: 1
+        digits_round: 0
+        display_string: "Home Consumption"
+        unit: "W"
+        datatype: int
+        division: 1000
+        division_digits: 2
+        division_unit: "kW"
+
+      sum_battery_charge_discharge_dc:
+        address: 40984
+        type: INT32
+        resolution: 1
+        digits_round: 0
+        display_string: "Sum battery charge / discharge DC"
+        unit: "W"
+        datatype: int
+        division: 1000
+        division_digits: 2
+        division_unit: "kW"
+
+      system_state_of_charge:
+        address: 40986
+        type: UINT16
+        resolution: 1
+        digits_round: 0
+        display_string: "System state of charge"
+        unit: "%"
+        datatype: int
+
+      home_consumption_from_pv:
+        address: 40988
+        type: UINT32
+        resolution: 1
+        digits_round: 0
+        display_string: "Home consumption from PV"
+        unit: "W"
+        datatype: int
+        division: 1000
+        division_digits: 2
+        division_unit: "kW"
+
+      home_consumption_from_battery:
+        address: 40990
+        type: UINT32
+        resolution: 1
+        digits_round: 0
+        display_string: "Home consumption from battery"
+        unit: "W"
+        datatype: int
+        division: 1000
+        division_digits: 2
+        division_unit: "kW"
+
+      home_consumption_from_grid:
+        address: 40992
+        type: UINT32
+        resolution: 1
+        digits_round: 0
+        display_string: "Home consumption from grid"
+        unit: "W"
+        datatype: int
+        division: 1000
+        division_digits: 2
+        division_unit: "kW"
+
+      active_charge_mode:
+        address: 40994
+        type: UINT16
+        resolution: 1
+        digits_round: 0
+        display_string: "Active charge mode"
+        unit: ""
+        datatype: int
+
+      sum_wallbox_charge_power_total:
+        address: 40996
+        type: UINT32
+        resolution: 1
+        digits_round: 0
+        display_string: "Sum wallbox charge power total"
+        unit: "W"
+        datatype: int
+        division: 1000
+        division_digits: 2
+        division_unit: "kW"
+
+      sum_wallbox_charge_power_pv:
+        address: 40998
+        type: UINT32
+        resolution: 1
+        digits_round: 0
+        display_string: "Sum wallbox charge power PV"
+        unit: "W"
+        datatype: int
+        division: 1000
+        division_digits: 2
+        division_unit: "kW"
+
+      sum_wallbox_charge_power_battery:
+        address: 41000
+        type: UINT32
+        resolution: 1
+        digits_round: 0
+        display_string: "Sum wallbox charge power battery"
+        unit: "W"
+        datatype: int
+        division: 1000
+        division_digits: 2
+        division_unit: "kW"
+
+      sum_wallbox_charge_power_grid:
+        address: 41002
+        type: UINT32
+        resolution: 1
+        digits_round: 0
+        display_string: "Sum wallbox charge power grid"
+        unit: "W"
+        datatype: int
+        division: 1000
+        division_digits: 2
+        division_unit: "kW"
+
+      sum_inverter_control_values:
+        address: 41004
+        type: UINT32
+        resolution: 1
+        digits_round: 0
+        display_string: "Sum inverter control values"
+        unit: "W"
+        datatype: int
+        division: 1000
+        division_digits: 2
+        division_unit: "kW"
+
+      active_power_charging:
+        address: 49246
+        type: UINT64
+        resolution: 0.001
+        digits_round: 0
+        display_string: "Ladeleistung"
+        unit: "kW"
+        datatype: int
+        division: 1000
+        division_digits: 2
+        division_unit: "kW"
+
+      current_session_duration:
+        address: 49258
+        type: UINT64
+        resolution: 0.016667   # 1/60
+        digits_round: 0
+        display_string: "Wallbox Verbindungsdauer"
+        unit: "min"
+        datatype: int
+        division: 60
+        division_digits: 1
+        division_unit: "h"
+
+      current_session_energy:
+        address: 49254
+        type: UINT64
+        resolution: 0.001
+        digits_round: 0
+        display_string: "Energie"
+        unit: "Wh"
+        datatype: int
+        division: 1000
+        division_digits: 2
+        division_unit: "kWh"
+
+  heater_rod:
+    host: "192.168.178.174"   # ELWA2 Heizstab
+    poll_interval_s: 5
+    api_path: "/data.jsn"
+    fields:
+      power_elwa2:
+        display_string: "Leistung Heizstab"
+        unit: "W"
+        endpoint: "power_heater_rod"
+        datatype: int
+        division: 1000
+        division_unit: "kWh"
+        division_digits: 2
+
+      temp1:
+        factor: 0.1
+        digits_round: 1
+        display_string: "Temperatur 1"
+        unit: "°C"
+        endpoint: "temperature_heater_rod"
+        datatype: float
+
+      temp2:
+        factor: 0.1
+        digits_round: 1
+        display_string: "Temperatur 2"
+        unit: "°C"
+        datatype: float
+
+  mqtt:
+    broker: "192.168.178.182"   # ioBroker
+    port: 1883
+    topic_prefix: "mqtt/0/"
+    topics:
+      "knx/Leistung_Backofen":
+        digits_round: 0
+        display_string: "Leistung Backofen"
+        unit: "W"
+        endpoint: "power_oven"
+        datatype: int
+        division: 1000
+        division_digits: 2
+        division_unit: "kW"
+
+      "knx/Leistung_Badheizkoerper_oben":
+        digits_round: 0
+        display_string: "Leistung Badheizkörper oben"
+        unit: "W"
+        endpoint: "power_bathroom_heater_top_floor"
+        datatype: int
+        division: 1000
+        division_digits: 2
+        division_unit: "kW"
+
+      "knx/Leistung_Badheizkoerper_unten":
+        digits_round: 0
+        display_string: "Leistung Badheizkörper unten"
+        unit: "W"
+        endpoint: "power_bathroom_heater_ground_floor"
+        datatype: int
+        division: 1000
+        division_digits: 2
+        division_unit: "kW"
+
+      "knx/Leistung_Geschirrspueler":
+        digits_round: 0
+        display_string: "Leistung Geschirrspüler"
+        unit: "W"
+        endpoint: "power_dishwasher"
+        datatype: int
+        division: 1000
+        division_digits: 2
+        division_unit: "kW"
+
+      "knx/Leistung_KWL":
+        digits_round: 0
+        display_string: "Leistung KWL"
+        unit: "W"
+        endpoint: "power_kwl"
+        datatype: int
+        division: 1000
+        division_digits: 2
+        division_unit: "kW"
+
+      "knx/Leistung_Kuehlschrank":
+        digits_round: 0
+        display_string: "Leistung Kühlschrank"
+        unit: "W"
+        endpoint: "power_fridge"
+        datatype: int
+        division: 1000
+        division_digits: 2
+        division_unit: "kW"
+
+      "knx/Leistung_Kuehlschrank_HWR":
+        digits_round: 0
+        display_string: "Leistung Kühlschrank HWR"
+        unit: "W"
+        endpoint: "power_fridge_hwr"
+        datatype: int
+        division: 1000
+        division_digits: 2
+        division_unit: "kW"
+
+      "knx/Leistung_TV":
+        digits_round: 0
+        display_string: "Leistung TV"
+        unit: "W"
+        endpoint: "power_tv"
+        datatype: int
+        division: 1000
+        division_digits: 2
+        division_unit: "kW"
+
+      "knx/Leistung_TV_Zubehoer":
+        digits_round: 0
+        display_string: "Leistung TV-Zubehör"
+        unit: "W"
+        endpoint: "power_tv_accessory"
+        datatype: int
+        division: 1000
+        division_digits: 2
+        division_unit: "kW"
+
+      "knx/Leistung_Trockner":
+        digits_round: 0
+        display_string: "Leistung Trockner"
+        unit: "W"
+        endpoint: "power_dryer"
+        datatype: int
+        division: 1000
+        division_digits: 2
+        division_unit: "kW"
+
+      "knx/Leistung_Waschmaschine":
+        digits_round: 0
+        display_string: "Leistung Waschmaschine"
+        unit: "W"
+        endpoint: "power_washing_machine"
+        datatype: int
+        division: 1000
+        division_digits: 2
+        division_unit: "kW"
+
+      "knx/Leistung_Wasserenthaertung":
+        digits_round: 0
+        display_string: "Leistung Wasserenthärtung"
+        unit: "W"
+        endpoint: "power_water_softening"
+        datatype: int
+        division: 1000
+        division_digits: 2
+        division_unit: "kW"
+
+      "knx/Warmwasser_Temperatur":
+        digits_round: 1
+        display_string: "Warmwassertemperatur"
+        unit: "°C"
+        endpoint: "temperature_hot_water"
+        datatype: float

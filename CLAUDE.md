@@ -5,7 +5,9 @@
 Eigenentwickeltes PV-Monitoring-System bestehend aus zwei Teilen:
 
 1. **Backend (Python)** — läuft auf einem Raspberry Pi 5 (4GB RAM), sammelt Energiedaten von mehreren Quellen, speichert sie in InfluxDB und stellt sie über eine API bereit.
+Entwicklungsumgebung: Windows mit PowerShell und PyCharm, später Ausführung auf Raspberry Pi OS
 2. **Android App (Kotlin)** — native App mit Jetpack Compose, zeigt Live-Daten und historische Statistiken an.
+Entwicklungsumgebung: Windows mit Android Studio
 
 Der Raspberry Pi ist über einen **Cloudflare Tunnel** (`cloudflared`) von überall erreichbar — kein VPS, kein Port-Forwarding.
 
