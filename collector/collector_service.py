@@ -84,6 +84,70 @@ class CollectorService:
             **self.mqtt_data,
         }
 
+    def get_structured_live_data(self) -> dict:
+        """Return sensor values grouped by device, ready for the WebSocket payload."""
+        d = self.get_live_data()
+
+        pv = d.get("sum_pv_power_inverter_dc")
+        grid = d.get("grid_power_total")
+        home = d.get("home_consumption")
+
+        # Derived calculations
+        self_consumption_w = None
+        self_consumption_rate_pct = None
+        autarky_rate_pct = None
+        if pv is not None and grid is not None:
+            grid_feed = max(grid, 0)
+            self_consumption_w = pv - grid_feed
+            if pv > 0:
+                self_consumption_rate_pct = round(self_consumption_w / pv * 100, 1)
+        if self_consumption_w is not None and home is not None and home > 0:
+            autarky_rate_pct = round(self_consumption_w / home * 100, 1)
+
+        # Consumer topics — strip the "knx/" prefix for cleaner keys
+        consumers = {
+            key.replace("knx/", ""): self.mqtt_data.get(key)
+            for key in self.mqtt_data
+        }
+
+        return {
+            "inverter": {
+                "power_ac_w": d.get("sum_output_inverter_ac"),
+                "power_dc_w": d.get("sum_pv_power_inverter_dc"),
+                "home_consumption_from_pv_w": d.get("home_consumption_from_pv"),
+            },
+            "smartmeter": {
+                "grid_power_w": d.get("grid_power_total"),
+                "home_consumption_w": d.get("home_consumption"),
+                "home_consumption_from_grid_w": d.get("home_consumption_from_grid"),
+                "home_consumption_from_battery_w": d.get("home_consumption_from_battery"),
+            },
+            "wallbox": {
+                "power_w": d.get("sum_wallbox_charge_power_total"),
+                "power_pv_w": d.get("sum_wallbox_charge_power_pv"),
+                "power_battery_w": d.get("sum_wallbox_charge_power_battery"),
+                "power_grid_w": d.get("sum_wallbox_charge_power_grid"),
+                "session_energy_wh": d.get("current_session_energy"),
+                "session_duration_min": d.get("current_session_duration"),
+                "active_charge_mode": d.get("active_charge_mode"),
+            },
+            "battery": {
+                "power_w": d.get("sum_battery_charge_discharge_dc"),
+                "state_of_charge_pct": d.get("system_state_of_charge"),
+            },
+            "heater": {
+                "power_w": d.get("power_elwa2"),
+                "temp1_c": d.get("temp1"),
+                "temp2_c": d.get("temp2"),
+            },
+            "consumers": consumers,
+            "calculated": {
+                "self_consumption_w": self_consumption_w,
+                "self_consumption_rate_pct": self_consumption_rate_pct,
+                "autarky_rate_pct": autarky_rate_pct,
+            },
+        }
+
     @property
     def influx(self) -> InfluxClient:
         return self._influx

@@ -33,7 +33,7 @@ async def websocket_live(websocket: WebSocket) -> None:
         while True:
             payload = LiveDataPayload(
                 timestamp=datetime.now(timezone.utc),
-                data=collector.get_live_data(),
+                **collector.get_structured_live_data(),
             )
             await websocket.send_text(payload.model_dump_json())
             await asyncio.sleep(1)

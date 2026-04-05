@@ -7,3 +7,20 @@
 /.idea/vcs.xml
 /smartMeterConfig.json
 /config/users.yaml
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+
+# Environment
+.env
+.env.*
+
+# Cloudflare tunnel credentials
+*.json
+!sampleSmartMeterConfig.json
