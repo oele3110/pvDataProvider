@@ -150,6 +150,67 @@ docker compose up -d
 
 After the first start, create the additional InfluxDB buckets and aggregation tasks as described in steps 4 and 5 above.
 
+## Cloudflare Tunnel
+
+The API is exposed publicly via a Cloudflare Tunnel — no open ports or VPS required.
+
+### Initial setup (once, on any machine with cloudflared installed)
+
+```bash
+# Install cloudflared
+# Windows: winget install Cloudflare.cloudflared
+# Linux:   curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64.deb -o cloudflared.deb && sudo dpkg -i cloudflared.deb
+
+cloudflared tunnel login
+cloudflared tunnel create pvmonitor
+cloudflared tunnel route dns pvmonitor pv.yourdomain.de
+```
+
+This creates a credentials file at `~/.cloudflared/<tunnel-id>.json`.
+
+### Tunnel configuration
+
+Create `~/.cloudflared/config.yml`:
+
+```yaml
+tunnel: pvmonitor
+credentials-file: /home/pi/.cloudflared/<tunnel-id>.json   # adjust path for your OS
+
+ingress:
+  - hostname: pv.yourdomain.de
+    service: http://localhost:8000
+  - service: http_status:404
+```
+
+### Run manually
+
+```bash
+cloudflared tunnel run pvmonitor
+```
+
+### Run as a system service on the Raspberry Pi (recommended)
+
+```bash
+sudo cloudflared service install
+sudo systemctl enable cloudflared
+sudo systemctl start cloudflared
+```
+
+The tunnel then starts automatically on boot.
+
+### Deploying to the Pi
+
+Copy the following from your development machine to the Pi:
+
+- The repository (via `git clone` or `scp`)
+- `~/.cloudflared/<tunnel-id>.json` → `/home/pi/.cloudflared/<tunnel-id>.json`
+
+Then update `credentials-file` in `config.yml` to the correct Linux path.
+
+The API is then available at:
+- REST: `https://pv.yourdomain.de/api/`
+- WebSocket: `wss://pv.yourdomain.de/ws`
+
 ## API
 
 | Endpoint | Description |
