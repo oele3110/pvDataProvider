@@ -57,12 +57,24 @@ InfluxDB will be available at http://localhost:8086 (login: `admin` / `pvmonitor
 
 **Important:** After the first start, comment out the `environment` block again in `docker-compose.yaml`. Otherwise InfluxDB will be re-initialized on every restart and all data will be lost.
 
-### 4. Create InfluxDB buckets
+### 4. Create InfluxDB buckets and set retention
 
 ```bash
+# Create buckets
 docker exec pvmonitor-influxdb influx bucket create -n hourly -o pvmonitor -r 8760h --token pvmonitor-dev-token
 docker exec pvmonitor-influxdb influx bucket create -n daily  -o pvmonitor -r 0    --token pvmonitor-dev-token
+
+# Set retention on the raw bucket (14 days)
+docker exec pvmonitor-influxdb influx bucket update --name raw --retention 336h --token pvmonitor-dev-token --org pvmonitor
 ```
+
+Retention policy per bucket:
+
+| Bucket | Retention | Description |
+|---|---|---|
+| raw | 14 days (336h) | Raw 1s values |
+| hourly | 1 year (8760h) | Hourly aggregates |
+| daily | unlimited | Daily aggregates |
 
 ### 5. Set up InfluxDB aggregation tasks
 
@@ -241,6 +253,71 @@ The API is then available at:
 Swagger UI: http://localhost:8000/docs
 
 All endpoints except `/api/login` require a Bearer token in the `Authorization` header.
+
+## Operations
+
+### Docker
+
+```bash
+# Show running containers and their status
+docker ps
+
+# Start all services
+docker compose up -d
+
+# Stop all services
+docker compose down
+
+# Restart a single service
+docker compose restart backend
+docker compose restart influxdb
+
+# Rebuild and restart the backend after code changes
+docker compose build backend && docker compose up -d backend
+```
+
+### Logs
+
+```bash
+# Follow backend logs live
+docker logs pvmonitor-backend -f
+
+# Follow InfluxDB logs live
+docker logs pvmonitor-influxdb -f
+
+# Show last 100 lines
+docker logs pvmonitor-backend --tail 100
+
+# Cloudflare Tunnel logs
+sudo journalctl -u cloudflared -f
+```
+
+### Cloudflare Tunnel
+
+```bash
+# Check tunnel status
+sudo systemctl status cloudflared
+
+# Restart tunnel
+sudo systemctl restart cloudflared
+
+# Stop/start tunnel
+sudo systemctl stop cloudflared
+sudo systemctl start cloudflared
+```
+
+### System
+
+```bash
+# Check disk usage (relevant for InfluxDB data volume)
+df -h
+
+# Check memory usage
+free -h
+
+# Check CPU/memory per process
+top
+```
 
 ## Project structure
 
