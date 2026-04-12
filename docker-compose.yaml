@@ -5,7 +5,7 @@ services:
     ports:
       - "8086:8086"
     volumes:
-      - influxdb-data:/var/lib/influxdb2
+      - /mnt/ssd/influxdb:/var/lib/influxdb2
     # environment: — only needed for first-time setup, remove after InfluxDB is initialized
     # to prevent data loss on restart. Uncomment to re-initialize:
     # environment:
@@ -32,5 +32,3 @@ services:
     restart: unless-stopped
     network_mode: host   # needed for Modbus/MQTT access to local network devices on the Pi
 
-volumes:
-  influxdb-data:

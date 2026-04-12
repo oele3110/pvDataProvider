@@ -178,6 +178,35 @@ docker compose up -d
 
 After the first start, create the additional InfluxDB buckets and aggregation tasks as described in steps 4 and 5 above.
 
+### InfluxDB data on external SSD (recommended for Raspberry Pi)
+
+InfluxDB writes data continuously — storing it on the SD card will wear it out quickly. The `docker-compose.yaml` is configured to write to `/mnt/ssd/influxdb` on an external USB-SSD.
+
+Make sure the SSD is mounted at `/mnt/ssd` before starting the containers. Create the data directory:
+
+```bash
+sudo mkdir -p /mnt/ssd/influxdb
+```
+
+**Migrating existing data from SD card to SSD:**
+
+```bash
+# Stop InfluxDB
+docker compose stop influxdb
+
+# Find the current Docker volume mountpoint (volume name may vary)
+docker volume ls
+sudo cp -r $(docker volume inspect <volume-name> --format '{{.Mountpoint}}')/ /mnt/ssd/influxdb/
+
+# Restart
+docker compose up -d influxdb
+```
+
+Verify InfluxDB started correctly:
+```bash
+docker logs pvmonitor-influxdb --tail 20
+```
+
 ## Cloudflare Tunnel
 
 The API is exposed publicly via a Cloudflare Tunnel — no open ports or VPS required.
