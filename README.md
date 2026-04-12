@@ -35,11 +35,27 @@ pip install -r requirements.txt
 
 ### 3. Start InfluxDB
 
+For the **first start**, uncomment the `environment` block in `docker-compose.yaml` so InfluxDB gets initialized with the correct org, bucket, and token:
+
+```yaml
+environment:
+  DOCKER_INFLUXDB_INIT_MODE: setup
+  DOCKER_INFLUXDB_INIT_USERNAME: admin
+  DOCKER_INFLUXDB_INIT_PASSWORD: pvmonitor123
+  DOCKER_INFLUXDB_INIT_ORG: pvmonitor
+  DOCKER_INFLUXDB_INIT_BUCKET: raw
+  DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: pvmonitor-dev-token
+```
+
+Then start InfluxDB:
+
 ```bash
-docker compose up -d
+docker compose up -d influxdb
 ```
 
 InfluxDB will be available at http://localhost:8086 (login: `admin` / `pvmonitor123`).
+
+**Important:** After the first start, comment out the `environment` block again in `docker-compose.yaml`. Otherwise InfluxDB will be re-initialized on every restart and all data will be lost.
 
 ### 4. Create InfluxDB buckets
 
