@@ -76,6 +76,15 @@ class InfluxClient:
             await self._client.close()
             logger.info("InfluxClient closed")
 
+    async def ping(self) -> bool:
+        """Return True if InfluxDB is reachable."""
+        if not self._client:
+            return False
+        try:
+            return await self._client.ping()
+        except Exception:
+            return False
+
     async def write_raw(self, data: dict, timestamp: datetime | None = None) -> None:
         """Write all sensor values from *data* as a batch to the raw bucket."""
         if not self._client:

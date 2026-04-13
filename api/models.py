@@ -73,4 +73,5 @@ class DeviceStatus(BaseModel):
 class StatusResponse(BaseModel):
     status: str
     uptime_s: float
+    influxdb_available: bool
     devices: list[DeviceStatus]
