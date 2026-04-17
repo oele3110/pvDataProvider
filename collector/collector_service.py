@@ -137,6 +137,7 @@ class CollectorService:
                 "session_energy_wh": d.get("current_session_energy"),
                 "session_duration_min": d.get("current_session_duration"),
                 "active_charge_mode": d.get("active_charge_mode"),
+                "status_code": d.get("wallbox_status_code"),
             },
             "battery": {
                 "power_w": d.get("sum_battery_charge_discharge_dc"),

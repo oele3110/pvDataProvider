@@ -12,7 +12,7 @@ devices:
   modbus:
     host: "192.168.178.133"   # Kostal Plenticore / Smartmeter
     port: 502
-    poll_interval_s: 1
+    poll_interval_s: 3
     registers:
       grid_power_total:
         address: 40972
@@ -188,6 +188,15 @@ devices:
         division_digits: 2
         division_unit: "kW"
 
+      wallbox_status_code:
+        address: 49206
+        type: UINT64
+        resolution: 1
+        digits_round: 0
+        display_string: "Wallbox Status"
+        unit: ""
+        datatype: int
+
       active_power_charging:
         address: 49246
         type: UINT64
@@ -226,7 +235,7 @@ devices:
 
   heater_rod:
     host: "192.168.178.174"   # ELWA2 Heizstab
-    poll_interval_s: 5
+    poll_interval_s: 3
     api_path: "/data.jsn"
     fields:
       power_elwa2:

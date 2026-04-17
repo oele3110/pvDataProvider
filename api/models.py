@@ -34,6 +34,7 @@ class WallboxData(BaseModel):
     session_energy_wh: float | None = None
     session_duration_min: float | None = None
     active_charge_mode: int | None = None
+    status_code: int | None = None
 
 
 class BatteryData(BaseModel):
