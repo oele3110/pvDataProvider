@@ -21,5 +21,9 @@ def get_mqtt_config(cfg: dict) -> dict:
     return cfg["devices"]["mqtt"]
 
 
+def get_mqtt_mosquitto_config(cfg: dict) -> dict | None:
+    return cfg["devices"].get("mqtt_mosquitto")
+
+
 def get_influxdb_config(cfg: dict) -> dict:
     return cfg["influxdb"]

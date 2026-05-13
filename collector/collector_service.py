@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from collector.http_reader import HttpReader
 from collector.modbus_reader import ModbusReaderClient
 from collector.mqtt_reader import MqttReader
-from config.loader import load_config, get_modbus_config, get_heater_rod_config, get_mqtt_config, get_influxdb_config
+from config.loader import load_config, get_modbus_config, get_heater_rod_config, get_mqtt_config, get_mqtt_mosquitto_config, get_influxdb_config
 from db.influx_client import InfluxClient
 
 logger = logging.getLogger(__name__)
@@ -39,15 +39,23 @@ class CollectorService:
             self.last_seen["mqtt"] = datetime.now(timezone.utc)
 
         mqtt_cfg = get_mqtt_config(cfg)
+        mqtt_mosquitto_cfg = get_mqtt_mosquitto_config(cfg)
+
         # Build mapping: short topic key → endpoint name (for stable consumer keys)
         self._consumer_key_map: dict[str, str] = {
             short: topic_cfg.get("endpoint", short.replace("knx/", ""))
             for short, topic_cfg in mqtt_cfg["topics"].items()
         }
+        if mqtt_mosquitto_cfg:
+            self._consumer_key_map.update({
+                short: topic_cfg.get("endpoint", short)
+                for short, topic_cfg in mqtt_mosquitto_cfg["topics"].items()
+            })
 
         self._modbus_reader = ModbusReaderClient(get_modbus_config(cfg), self.modbus_data, _on_modbus_success)
         self._http_reader = HttpReader(get_heater_rod_config(cfg), self.heater_rod_data, _on_heater_success)
         self._mqtt_reader = MqttReader(mqtt_cfg, self.mqtt_data, _on_mqtt_success)
+        self._mqtt_mosquitto_reader = MqttReader(mqtt_mosquitto_cfg, self.mqtt_data, _on_mqtt_success) if mqtt_mosquitto_cfg else None
         self._influx = InfluxClient(cfg["influxdb"])
 
         self._stop_event = asyncio.Event()
@@ -60,6 +68,8 @@ class CollectorService:
         await self._modbus_reader.start()
         # MqttReader.start() connects and starts the paho thread, returns immediately
         await self._mqtt_reader.start()
+        if self._mqtt_mosquitto_reader:
+            await self._mqtt_mosquitto_reader.start()
         # HttpReader.start() runs a blocking while-loop → wrap as task
         self._tasks = [
             asyncio.create_task(self._http_reader.start(), name="HttpReader"),
@@ -72,6 +82,8 @@ class CollectorService:
         await self._modbus_reader.stop()
         await self._http_reader.stop()
         await self._mqtt_reader.stop()
+        if self._mqtt_mosquitto_reader:
+            await self._mqtt_mosquitto_reader.stop()
 
         for task in self._tasks:
             if not task.done():
