@@ -393,3 +393,10 @@ devices:
         unit: "°C"
         endpoint: "temperature_hot_water"
         datatype: float
+
+      "weconnect/vehicles/soc":
+        digits_round: 0
+        display_string: "SOC"
+        unit: "%"
+        endpoint: "car_soc"
+        datatype: int
